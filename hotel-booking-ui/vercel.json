@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "framework": "other",
+  "framework": "angular",
   "installCommand": "npm install",
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist/hotel-booking-ui",
