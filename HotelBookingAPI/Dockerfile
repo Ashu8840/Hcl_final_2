@@ -3,11 +3,19 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY ["HotelBookingAPI.csproj", "./"]
-RUN dotnet restore "./HotelBookingAPI.csproj"
-
 COPY . .
-RUN dotnet publish "./HotelBookingAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN set -eux; \
+		if [ -f "./HotelBookingAPI.csproj" ]; then \
+			PROJECT="./HotelBookingAPI.csproj"; \
+		elif [ -f "./HotelBookingAPI/HotelBookingAPI.csproj" ]; then \
+			PROJECT="./HotelBookingAPI/HotelBookingAPI.csproj"; \
+		else \
+			echo "HotelBookingAPI.csproj not found in Docker build context."; \
+			ls -la; \
+			exit 1; \
+		fi; \
+		dotnet restore "$PROJECT"; \
+		dotnet publish "$PROJECT" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
