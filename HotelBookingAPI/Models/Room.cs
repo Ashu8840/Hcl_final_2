@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HotelBookingAPI.Models;
 
@@ -17,6 +18,7 @@ public partial class Room
 
     public bool? IsAvailable { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     public virtual Hotel Hotel { get; set; } = null!;

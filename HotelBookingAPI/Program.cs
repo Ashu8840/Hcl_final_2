@@ -174,14 +174,21 @@ if (useSqliteFallback)
         "MySQL server {Host}:{Port} is unreachable. Falling back to SQLite for runtime stability.",
         hasMySqlEndpoint ? mySqlHost : "<unknown>",
         hasMySqlEndpoint ? mySqlPort : 3306);
-
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<HotelBookingDbContext>();
-    db.Database.EnsureCreated();
 }
 else
 {
     app.Logger.LogInformation("Database provider configured: MySQL ({Host}:{Port})", mySqlHost, mySqlPort);
+}
+
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<HotelBookingDbContext>();
+    await DatabaseSeeder.SeedAsync(db, app.Configuration, app.Logger);
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Database seeding failed. API startup will continue.");
 }
 
 // 7. Swagger UI

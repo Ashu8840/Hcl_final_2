@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HotelBookingAPI.Models;
 
@@ -15,5 +16,6 @@ public partial class Hotel
 
     public DateTime? CreatedAt { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }
