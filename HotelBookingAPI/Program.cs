@@ -1,3 +1,5 @@
+using System.Data.Common;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -8,13 +10,33 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-LoadDotEnvIfPresent(Directory.GetCurrentDirectory());
-
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Register DbContext with MySQL connection
-builder.Services.AddDbContext<HotelBookingDbContext>(options =>
-    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
+// 1. Register DbContext with MySQL connection + safe fallback
+var mySqlConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(mySqlConnectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
+}
+
+var hasMySqlEndpoint = TryGetMySqlHostAndPort(mySqlConnectionString, out var mySqlHost, out var mySqlPort);
+var canReachMySql = hasMySqlEndpoint && CanReachTcpHost(mySqlHost, mySqlPort, TimeSpan.FromSeconds(5));
+var useSqliteFallback = !canReachMySql;
+
+if (useSqliteFallback)
+{
+    var sqlitePath = Path.Combine(builder.Environment.ContentRootPath, "hotelbooking-dev.db");
+    var sqliteConnectionString = $"Data Source={sqlitePath}";
+
+    builder.Services.AddDbContext<HotelBookingDbContext>(options =>
+        options.UseSqlite(sqliteConnectionString));
+}
+else
+{
+    builder.Services.AddDbContext<HotelBookingDbContext>(options =>
+        options.UseMySQL(mySqlConnectionString));
+}
 
 // 2. Controllers + safer JSON serialization
 builder.Services.AddControllers()
@@ -99,10 +121,19 @@ builder.Services.AddCors(options =>
                       return false;
                   }
 
-                  return uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
-                         || uri.Host.Equals("127.0.0.1")
-                         || (uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)
-                             && uri.Host.Equals("hcl-final.vercel.app", StringComparison.OrdinalIgnoreCase));
+                  if (uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
+                      || uri.Host.Equals("127.0.0.1"))
+                  {
+                      return true;
+                  }
+
+                  if (!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+                  {
+                      return false;
+                  }
+
+                  return uri.Host.Equals("hcl-final-2-3crf.vercel.app", StringComparison.OrdinalIgnoreCase)
+                         || uri.Host.Equals("hcl-final.vercel.app", StringComparison.OrdinalIgnoreCase);
               })
               .AllowAnyMethod()
               .AllowAnyHeader());
@@ -137,6 +168,22 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
+if (useSqliteFallback)
+{
+    app.Logger.LogWarning(
+        "MySQL server {Host}:{Port} is unreachable. Falling back to SQLite for runtime stability.",
+        hasMySqlEndpoint ? mySqlHost : "<unknown>",
+        hasMySqlEndpoint ? mySqlPort : 3306);
+
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<HotelBookingDbContext>();
+    db.Database.EnsureCreated();
+}
+else
+{
+    app.Logger.LogInformation("Database provider configured: MySQL ({Host}:{Port})", mySqlHost, mySqlPort);
+}
+
 // 7. Swagger UI
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -151,38 +198,88 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/", () => Results.Ok(new
+{
+    status = "ok",
+    service = "HotelBookingAPI",
+    databaseProvider = useSqliteFallback ? "SQLiteFallback" : "MySQL"
+}));
+
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    databaseProvider = useSqliteFallback ? "SQLiteFallback" : "MySQL"
+}));
+
 app.MapControllers();
 
 app.Run();
 
-static void LoadDotEnvIfPresent(string rootPath)
+static bool TryGetMySqlHostAndPort(string connectionString, out string host, out int port)
 {
-    var envPath = Path.Combine(rootPath, ".env");
-    if (!File.Exists(envPath))
+    host = string.Empty;
+    port = 3306;
+
+    try
     {
-        return;
+        var connectionBuilder = new DbConnectionStringBuilder
+        {
+            ConnectionString = connectionString
+        };
+
+        if (!TryGetConnectionStringValue(connectionBuilder, out host, "Server", "Host", "Data Source"))
+        {
+            return false;
+        }
+
+        if (TryGetConnectionStringValue(connectionBuilder, out var portValue, "Port")
+            && int.TryParse(portValue, out var parsedPort)
+            && parsedPort > 0)
+        {
+            port = parsedPort;
+        }
+
+        return !string.IsNullOrWhiteSpace(host);
+    }
+    catch
+    {
+        return false;
+    }
+}
+
+static bool TryGetConnectionStringValue(DbConnectionStringBuilder connectionBuilder, out string value, params string[] keys)
+{
+    foreach (var key in keys)
+    {
+        if (!connectionBuilder.TryGetValue(key, out var rawValue) || rawValue is null)
+        {
+            continue;
+        }
+
+        var candidate = rawValue.ToString()?.Trim();
+        if (!string.IsNullOrWhiteSpace(candidate))
+        {
+            value = candidate;
+            return true;
+        }
     }
 
-    foreach (var rawLine in File.ReadAllLines(envPath))
+    value = string.Empty;
+    return false;
+}
+
+static bool CanReachTcpHost(string host, int port, TimeSpan timeout)
+{
+    try
     {
-        var line = rawLine.Trim();
-        if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
-        {
-            continue;
-        }
+        using var client = new TcpClient();
+        var connectTask = client.ConnectAsync(host, port);
+        var connectedInTime = connectTask.Wait(timeout);
 
-        var separatorIndex = line.IndexOf('=');
-        if (separatorIndex <= 0)
-        {
-            continue;
-        }
-
-        var key = line[..separatorIndex].Trim();
-        var value = line[(separatorIndex + 1)..].Trim().Trim('"');
-
-        if (!string.IsNullOrWhiteSpace(key))
-        {
-            Environment.SetEnvironmentVariable(key, value);
-        }
+        return connectedInTime && client.Connected;
+    }
+    catch
+    {
+        return false;
     }
 }
