@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const fallbackApiBaseUrl = 'https://your-backend-api-domain.example.com/api';
+const fallbackApiBaseUrl = 'https://hcl-final-2-3.onrender.com/api';
 const apiBaseUrl = (process.env.API_BASE_URL || fallbackApiBaseUrl).trim();
 
 const normalizedApiBaseUrl = apiBaseUrl.replace(/\/$/, '');
