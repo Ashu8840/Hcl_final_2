@@ -88,7 +88,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 5. CORS for Angular dev servers
+// 5. CORS for Angular dev servers + production frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
@@ -100,7 +100,9 @@ builder.Services.AddCors(options =>
                   }
 
                   return uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
-                         || uri.Host.Equals("127.0.0.1");
+                         || uri.Host.Equals("127.0.0.1")
+                         || (uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)
+                             && uri.Host.Equals("hcl-final.vercel.app", StringComparison.OrdinalIgnoreCase));
               })
               .AllowAnyMethod()
               .AllowAnyHeader());

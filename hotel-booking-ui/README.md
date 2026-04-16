@@ -82,7 +82,7 @@ Vercel uses `vercel.json` in this project with:
 
 - install command: `npm install`
 - build command: `npm run build:vercel`
-- output directory: `dist/hotel-booking-ui`
+- output directory: `dist/hotel-booking-ui/browser`
 
 ### 4) Local check before deploy
 
