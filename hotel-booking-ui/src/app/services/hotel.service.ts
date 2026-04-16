@@ -22,7 +22,9 @@ export class HotelService {
     'http://localhost:5121/api',
     'https://localhost:7186/api',
     'http://localhost:5000/api',
-  ].filter((value, index, array): value is string => Boolean(value) && array.indexOf(value) === index);
+  ].filter(
+    (value, index, array): value is string => Boolean(value) && array.indexOf(value) === index,
+  );
 
   private apiUrl = localStorage.getItem('apiBaseUrl') || this.apiCandidates[0];
   private readonly currentUserKey = 'currentUser';

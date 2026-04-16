@@ -8,7 +8,7 @@ const normalizedApiBaseUrl = apiBaseUrl.replace(/\/$/, '');
 
 if (!/^https?:\/\//.test(normalizedApiBaseUrl)) {
   console.warn(
-    `⚠️ API_BASE_URL should be an absolute URL. Received: "${normalizedApiBaseUrl}". Falling back to placeholder.`
+    `⚠️ API_BASE_URL should be an absolute URL. Received: "${normalizedApiBaseUrl}". Falling back to placeholder.`,
   );
 }
 
