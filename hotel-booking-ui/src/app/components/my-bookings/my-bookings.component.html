@@ -1,0 +1,74 @@
+<div class="bookings-header">
+  <h1 class="page-title" style="margin-bottom: 0">My Bookings</h1>
+  <button (click)="loadBookings()" class="btn btn-secondary">Refresh</button>
+</div>
+
+<div *ngIf="loading" style="text-align: center; padding: 3rem; color: #666">
+  <p>Loading your bookings...</p>
+</div>
+
+<div *ngIf="!loading && bookings.length === 0" class="alert alert-info">
+  You don't have any bookings yet. <a routerLink="/rooms" style="font-weight: bold">Find a room</a>
+</div>
+
+<div *ngIf="!loading && bookings.length > 0" class="bookings-list">
+  <div *ngFor="let booking of bookings" class="card booking-card">
+    <!-- Date block -->
+    <div class="date-block">
+      <div class="label">Check In</div>
+      <div class="day">
+        {{ booking.checkInDate | date: 'MMM dd' }}
+      </div>
+      <div class="year">{{ booking.checkInDate | date: 'yyyy' }}</div>
+    </div>
+
+    <!-- Info block -->
+    <div class="booking-info">
+      <h3>
+        {{ booking.room?.hotel?.name || 'Hotel' }}
+      </h3>
+      <p style="color: #555; margin-bottom: 1rem">Room {{ booking.room?.roomNumber }}</p>
+
+      <div class="booking-meta">
+        <div>
+          <strong>Check-Out:</strong><br />
+          {{ booking.checkOutDate | date: 'mediumDate' }}
+        </div>
+        <div>
+          <strong>Total Amount:</strong><br />
+          ₹{{ booking.totalPrice }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Action block -->
+    <div class="booking-actions">
+      <div style="margin-bottom: 1rem">
+        <span
+          class="badge"
+          [ngClass]="booking.status === 'Confirmed' ? 'badge-success' : 'badge-danger'"
+        >
+          {{ booking.status }}
+        </span>
+      </div>
+
+      <button
+        *ngIf="booking.status === 'Confirmed'"
+        (click)="cancelBooking(booking.id)"
+        class="btn btn-danger"
+        style="font-size: 0.85rem"
+      >
+        Cancel Booking
+      </button>
+
+      <button
+        *ngIf="booking.room?.id"
+        (click)="rebook(booking.room.id)"
+        class="btn btn-secondary"
+        style="font-size: 0.85rem; margin-top: 0.6rem"
+      >
+        Quick Rebook
+      </button>
+    </div>
+  </div>
+</div>

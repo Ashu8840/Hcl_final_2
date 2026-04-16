@@ -1,0 +1,79 @@
+<div *ngIf="loading" style="text-align: center; padding: 3rem; color: #666">
+  <p>Loading hotel details...</p>
+</div>
+
+<div *ngIf="!loading && errorMessage" class="alert alert-error">
+  {{ errorMessage }}
+</div>
+
+<div *ngIf="!loading && !hotel" class="alert alert-error">Hotel not found.</div>
+
+<div *ngIf="!loading && hotel">
+  <!-- Hotel Info section -->
+  <div class="card hotel-detail-card">
+    <div class="hotel-hero-placeholder">Hero Image Placeholder</div>
+    <div class="hotel-detail-content">
+      <div class="hotel-detail-heading">
+        <div>
+          <h1 class="page-title hotel-name">{{ hotel.name }}</h1>
+          <p class="hotel-location">📍 {{ hotel.location || 'Unknown location' }}</p>
+        </div>
+      </div>
+
+      <div class="hotel-about">
+        <h3>About this Hotel</h3>
+        <p>{{ hotel.description || 'No description available for this hotel.' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rooms section -->
+  <h2 class="hotel-room-title">Available Rooms</h2>
+
+  <div *ngIf="rooms.length === 0" class="alert alert-info">
+    No rooms currently tracked for this hotel.
+  </div>
+
+  <div *ngIf="rooms.length > 0" class="grid">
+    <div *ngFor="let room of rooms" class="card hotel-room-card">
+      <div class="hotel-room-header">
+        <h3>Room {{ room.roomNumber }}</h3>
+        <span class="badge" [ngClass]="room.isAvailable ? 'badge-success' : 'badge-danger'">
+          {{ room.isAvailable ? 'Available' : 'Booked' }}
+        </span>
+      </div>
+
+      <div class="hotel-room-meta">
+        <p><strong>Capacity:</strong> {{ room.capacity }} Guests</p>
+        <p class="hotel-room-price">
+          ₹{{ room.pricePerNight }}
+          <span>/ night</span>
+        </p>
+
+        <div *ngIf="room.facilities?.length" class="hotel-room-facilities">
+          <span *ngFor="let facility of room.facilities" class="hotel-facility-chip">
+            {{ facility.name }}
+          </span>
+        </div>
+      </div>
+
+      <button
+        *ngIf="room.isAvailable"
+        [routerLink]="['/book', room.id]"
+        class="btn btn-primary"
+        style="width: 100%"
+      >
+        Book Now
+      </button>
+
+      <button
+        *ngIf="!room.isAvailable"
+        class="btn btn-secondary"
+        style="width: 100%; cursor: not-allowed"
+        disabled
+      >
+        Currently Unavailable
+      </button>
+    </div>
+  </div>
+</div>

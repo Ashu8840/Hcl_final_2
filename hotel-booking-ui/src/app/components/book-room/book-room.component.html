@@ -1,0 +1,84 @@
+<h1 class="page-title">Complete Your Booking</h1>
+
+<div *ngIf="loading" style="text-align: center; padding: 3rem; color: #666">
+  <p>Loading room details...</p>
+</div>
+
+<div *ngIf="!loading && !room" class="alert alert-error">
+  Room not found. Return to <a routerLink="/rooms">Rooms</a>.
+</div>
+
+<div *ngIf="!loading && room" class="book-room-layout">
+  <!-- Form side -->
+  <div class="card book-room-form">
+    <h3>Booking Details</h3>
+
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="submitBooking()">
+      <div class="form-group" style="margin-top: 1.5rem">
+        <label>Check-in Date</label>
+        <input
+          type="date"
+          [min]="today"
+          name="checkInDate"
+          [(ngModel)]="bookingData.checkInDate"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Check-out Date</label>
+        <input
+          type="date"
+          [min]="bookingData.checkInDate || today"
+          name="checkOutDate"
+          [(ngModel)]="bookingData.checkOutDate"
+          required
+        />
+      </div>
+
+      <div style="margin-top: 2rem">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="submitting"
+          style="width: 100%; padding: 0.8rem"
+        >
+          {{ submitting ? 'Processing...' : 'Confirm Booking' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Summary side -->
+  <div class="book-room-summary-wrap">
+    <div class="card book-room-summary">
+      <h3>Summary</h3>
+
+      <div class="summary-block">
+        <h4>Hotel</h4>
+        <p>{{ room.hotel?.name }}</p>
+      </div>
+
+      <div class="summary-block">
+        <h4>Room</h4>
+        <p>Room {{ room.roomNumber }} ({{ room.capacity }} Guests)</p>
+      </div>
+
+      <div class="summary-price">
+        <div>
+          <span>Price per night:</span>
+        </div>
+        <span>₹{{ room.pricePerNight }}</span>
+      </div>
+
+      <div class="summary-total">
+        <h4>Total Estimated:</h4>
+        <div class="summary-total-value">₹{{ calculateTotal() }}</div>
+      </div>
+    </div>
+  </div>
+</div>

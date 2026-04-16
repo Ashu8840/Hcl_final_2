@@ -1,0 +1,42 @@
+<div>
+  <div class="hotels-header">
+    <h1 class="page-title" style="margin-bottom: 0">Our Hotels</h1>
+    <input
+      class="hotels-search"
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+      placeholder="Search hotels..."
+    />
+  </div>
+
+  <div *ngIf="loading" style="text-align: center; padding: 3rem; color: #666">
+    <p>Loading hotels...</p>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && filteredHotels.length === 0" class="alert alert-info">
+    No hotels found matching your search.
+  </div>
+
+  <div *ngIf="!loading && filteredHotels.length > 0" class="grid">
+    <div *ngFor="let hotel of filteredHotels" class="card">
+      <!-- Fallback image if ImageUrl isn't in DB, though MVP may not have it yet -->
+      <div class="hotel-cover">Image Placeholder</div>
+
+      <div class="hotel-content">
+        <h3>{{ hotel.name }}</h3>
+        <p class="hotel-location">📍 {{ hotel.location || 'Location not specified' }}</p>
+
+        <p class="hotel-description">
+          {{ hotel.description || 'Provides excellent services and comfortable stays.' }}
+        </p>
+
+        <a [routerLink]="['/hotels', hotel.id]" class="btn btn-primary hotel-cta"> View Details </a>
+      </div>
+    </div>
+  </div>
+</div>

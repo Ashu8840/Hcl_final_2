@@ -1,0 +1,38 @@
+<div class="hero">
+  <h1>🏨 Find Your Perfect Stay</h1>
+  <p>Browse top hotels, compare rooms, and book instantly</p>
+  <div class="hero-search">
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Search by hotel name or city..." />
+    <button
+      class="btn btn-primary"
+      (click)="search()"
+      style="font-size: 1rem; padding: 0.75rem 2rem"
+    >
+      Search Hotels
+    </button>
+  </div>
+</div>
+
+<!-- Quick Links -->
+<div class="grid quick-links">
+  <div class="card quick-link-card">
+    <div class="quick-icon">🏨</div>
+    <h3>Browse Hotels</h3>
+    <p>Explore our curated list of hotels across India</p>
+    <a routerLink="/hotels" class="btn btn-primary">View Hotels</a>
+  </div>
+
+  <div class="card quick-link-card">
+    <div class="quick-icon">🛏️</div>
+    <h3>Available Rooms</h3>
+    <p>See all rooms available for booking right now</p>
+    <a routerLink="/rooms" class="btn btn-primary">View Rooms</a>
+  </div>
+
+  <div class="card quick-link-card">
+    <div class="quick-icon">📋</div>
+    <h3>My Bookings</h3>
+    <p>Check your reservation history and status</p>
+    <a routerLink="/my-bookings" class="btn btn-primary">View Bookings</a>
+  </div>
+</div>

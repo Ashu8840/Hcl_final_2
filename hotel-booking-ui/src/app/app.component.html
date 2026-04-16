@@ -1,0 +1,28 @@
+<nav class="navbar">
+  <div class="nav-brand">🏨 HotelBook</div>
+  <div class="nav-links">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/hotels" routerLinkActive="active">Hotels</a>
+    <a routerLink="/rooms" routerLinkActive="active">Rooms</a>
+
+    <!-- Auth specific links -->
+    <ng-container *ngIf="hotelService.isLoggedIn; else notLoggedIn">
+      <a routerLink="/my-bookings" routerLinkActive="active">My Bookings</a>
+      <span class="nav-user"> Hi, {{ hotelService.currentUser?.name }} </span>
+      <a href="javascript:void(0)" (click)="onLogout()" class="nav-logout">Logout</a>
+    </ng-container>
+
+    <ng-template #notLoggedIn>
+      <a routerLink="/auth/login" routerLinkActive="active">Login</a>
+      <a routerLink="/auth/register" routerLinkActive="active">Register</a>
+    </ng-template>
+  </div>
+</nav>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer">
+  <p>© 2025 HotelBook. All rights reserved.</p>
+</footer>

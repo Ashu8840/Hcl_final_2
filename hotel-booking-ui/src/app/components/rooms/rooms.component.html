@@ -1,0 +1,100 @@
+<h1 class="page-title">Find Available Rooms</h1>
+
+<div class="card room-filter-card">
+  <h3 class="filter-title">Search & Filter</h3>
+
+  <div class="filter-grid">
+    <div class="form-group">
+      <label>Location</label>
+      <input type="text" [(ngModel)]="filters.location" placeholder="e.g. Mumbai" />
+    </div>
+
+    <div class="form-group">
+      <label>Check-in</label>
+      <input type="date" [min]="today" [(ngModel)]="filters.checkIn" />
+    </div>
+
+    <div class="form-group">
+      <label>Check-out</label>
+      <input type="date" [min]="filters.checkIn || today" [(ngModel)]="filters.checkOut" />
+    </div>
+
+    <div class="form-group">
+      <label>Min Price (₹)</label>
+      <input type="number" min="0" [(ngModel)]="filters.minPrice" placeholder="e.g. 2000" />
+    </div>
+
+    <div class="form-group">
+      <label>Max Price (₹)</label>
+      <input type="number" min="0" [(ngModel)]="filters.maxPrice" placeholder="e.g. 10000" />
+    </div>
+
+    <div class="form-group">
+      <label>Guests</label>
+      <input type="number" min="1" [(ngModel)]="filters.guests" placeholder="e.g. 2" />
+    </div>
+
+    <div class="form-group amenities-field">
+      <label>Amenities (comma separated)</label>
+      <input type="text" [(ngModel)]="filters.amenitiesText" placeholder="wifi,pool,breakfast" />
+    </div>
+  </div>
+
+  <div class="filter-actions">
+    <button class="btn btn-primary" (click)="searchRooms()">Search Rooms</button>
+    <button class="btn btn-secondary" (click)="resetFilters()">Reset</button>
+  </div>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-error">
+  {{ errorMessage }}
+</div>
+
+<div *ngIf="loading" class="loading-state">
+  <p>Loading rooms...</p>
+</div>
+
+<div *ngIf="!loading && rooms.length === 0" class="alert alert-info">
+  No rooms match your current filters.
+</div>
+
+<div *ngIf="!loading && rooms.length > 0" class="grid">
+  <div *ngFor="let room of rooms" class="card room-card">
+    <div class="room-card-header">
+      <h3>Room {{ room.roomNumber }}</h3>
+      <span class="badge" [ngClass]="room.isAvailable ? 'badge-success' : 'badge-danger'">
+        {{ room.isAvailable ? 'Available' : 'Booked' }}
+      </span>
+    </div>
+
+    <p class="room-hotel-info">
+      <strong>{{ room.hotel?.name }}</strong
+      ><br />
+      📍 {{ room.hotel?.location || 'Location not available' }}
+    </p>
+
+    <div class="room-meta">
+      <p><strong>Capacity:</strong> {{ room.capacity }} Guests</p>
+      <p class="room-price">
+        ₹{{ room.pricePerNight }}
+        <span>/ night</span>
+      </p>
+    </div>
+
+    <div *ngIf="room.facilities?.length" class="amenities-list">
+      <span *ngFor="let facility of room.facilities" class="amenity-chip">{{ facility.name }}</span>
+    </div>
+
+    <button
+      *ngIf="room.isAvailable"
+      [routerLink]="['/book', room.id]"
+      class="btn btn-primary room-cta"
+    >
+      Book Now
+    </button>
+
+    <button *ngIf="!room.isAvailable" class="btn btn-secondary room-cta" disabled>
+      Currently Unavailable
+    </button>
+  </div>
+</div>

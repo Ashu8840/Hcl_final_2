@@ -1,0 +1,105 @@
+.hotel-detail-card {
+  margin-bottom: 2rem;
+}
+
+.hotel-hero-placeholder {
+  height: 230px;
+  background: linear-gradient(135deg, #e5ebf6 0%, #f2f6ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7690;
+  font-size: 1rem;
+}
+
+.hotel-detail-content {
+  padding: 1.5rem;
+}
+
+.hotel-detail-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hotel-name {
+  margin-bottom: 0.4rem;
+}
+
+.hotel-location {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.hotel-about {
+  background: #f8faff;
+  padding: 1.2rem;
+  border-radius: 10px;
+  line-height: 1.6;
+  color: #445;
+  border: 1px solid #e6edf9;
+}
+
+.hotel-about h3 {
+  margin-bottom: 0.7rem;
+  color: #24314e;
+}
+
+.hotel-room-title {
+  font-size: 1.45rem;
+  margin-bottom: 1.2rem;
+  color: #1a1a2e;
+}
+
+.hotel-room-card {
+  padding: 1.2rem;
+  border-top: 4px solid #f5a623;
+}
+
+.hotel-room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.hotel-room-header h3 {
+  color: #1a1a2e;
+  font-size: 1.15rem;
+}
+
+.hotel-room-meta {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.hotel-room-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #24314e;
+  margin-top: 0.7rem;
+}
+
+.hotel-room-price span {
+  font-size: 0.86rem;
+  font-weight: 400;
+  color: #7b8292;
+}
+
+.hotel-room-facilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+.hotel-facility-chip {
+  background: #eef4ff;
+  border: 1px solid #d9e6ff;
+  color: #27458a;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

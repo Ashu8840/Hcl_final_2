@@ -1,0 +1,85 @@
+.bookings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.booking-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.date-block {
+  background: #1a1a2e;
+  color: white;
+  padding: 1.5rem 1.2rem;
+  text-align: center;
+  min-width: 130px;
+}
+
+.date-block .label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #f5a623;
+  margin-bottom: 0.4rem;
+}
+
+.date-block .day {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.date-block .year {
+  font-size: 0.85rem;
+  color: #cad2df;
+}
+
+.booking-info {
+  padding: 1.2rem;
+  flex: 1;
+  min-width: 230px;
+}
+
+.booking-info h3 {
+  margin-bottom: 0.4rem;
+  color: #1a1a2e;
+}
+
+.booking-meta {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 0.9rem;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.booking-actions {
+  padding: 1.2rem;
+  border-left: 1px solid #eef1f5;
+  text-align: right;
+  min-width: 180px;
+}
+
+.booking-actions .btn {
+  width: 100%;
+}
+
+@media (max-width: 760px) {
+  .booking-actions {
+    border-left: none;
+    border-top: 1px solid #eef1f5;
+    width: 100%;
+    text-align: left;
+  }
+}
