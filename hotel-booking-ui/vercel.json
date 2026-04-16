@@ -3,7 +3,7 @@
   "framework": "angular",
   "installCommand": "npm install",
   "buildCommand": "npm run build:vercel",
-  "outputDirectory": "dist/hotel-booking-ui",
+  "outputDirectory": "dist/hotel-booking-ui/browser",
   "rewrites": [
     {
       "source": "/(.*)",
