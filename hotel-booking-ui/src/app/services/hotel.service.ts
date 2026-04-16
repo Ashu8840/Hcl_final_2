@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, map, of, tap, throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface RoomSearchFilters {
   location?: string;
@@ -17,10 +18,11 @@ export interface RoomSearchFilters {
 })
 export class HotelService {
   private readonly apiCandidates = [
+    environment.apiBaseUrl,
     'http://localhost:5121/api',
     'https://localhost:7186/api',
     'http://localhost:5000/api',
-  ];
+  ].filter((value, index, array): value is string => Boolean(value) && array.indexOf(value) === index);
 
   private apiUrl = localStorage.getItem('apiBaseUrl') || this.apiCandidates[0];
   private readonly currentUserKey = 'currentUser';
@@ -255,7 +257,7 @@ export class HotelService {
       return false;
     }
 
-    return error.status === 0 || error.status >= 500;
+    return error.status === 0 || error.status === 404 || error.status >= 500;
   }
 
   private normalizeHotels(input: any): any[] {

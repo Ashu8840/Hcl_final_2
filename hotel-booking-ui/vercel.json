@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "framework": "other",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "dist/hotel-booking-ui",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -57,3 +57,39 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Deploy on Vercel
+
+This frontend is ready for Vercel static deployment.
+
+### 1) Set Vercel project root
+
+If your repository contains both frontend and backend folders, set the **Root Directory** in Vercel to:
+
+`hotel-booking-ui`
+
+### 2) Configure environment variable
+
+In Vercel project settings, add:
+
+- `API_BASE_URL` = your deployed backend base URL (example: `https://your-backend-domain.com/api`)
+
+This value is injected into `src/environments/environment.production.ts` during build.
+
+### 3) Deploy
+
+Vercel uses `vercel.json` in this project with:
+
+- install command: `npm install`
+- build command: `npm run build:vercel`
+- output directory: `dist/hotel-booking-ui`
+
+### 4) Local check before deploy
+
+Run:
+
+```bash
+npm run build:vercel
+```
+
+If build succeeds locally, Vercel build should also succeed with the same configuration.
